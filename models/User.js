@@ -1,23 +1,25 @@
-const { sequelize } = require("../lib/postgres");
+const { sq } = require("../lib/postgres"); // Use 'sq' alias
+const { DataTypes } = require("sequelize");
 
-const User = sequelize.define("users", {
-    email: {
-      type: String,
-      allowNull: false,
-      primaryKey: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    }
+
+const User = sq.define("users", {
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    primaryKey: true,
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  }
 });
-// User.sync({force: true}).then(() => {
-//     // Table created
-//     return User.create({
-//       email: 'john',
-//       password: '123'
-//     });
-//   });
 
-module.exports = {User};
+User.sync().then(() => {
+  console.log("USER MODEL")
+  // Table created
+}).catch((err) => {
+  console.log("ERERRR");
+  console.log(err);
+});
 
+module.exports = { User };

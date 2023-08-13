@@ -18,10 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        {/* thanks to this we can use all the nextauth functions */}
         <AuthProvider>
-        {children}
+          {children}
         </AuthProvider>
-        </body>
+      </body>
     </html>
   )
 }
