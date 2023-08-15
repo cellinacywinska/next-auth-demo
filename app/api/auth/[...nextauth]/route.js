@@ -22,22 +22,21 @@ export const authOptions = {
                     const user = await User.findOne({
                         where: { email },
                         include: [
-                            // {
-                            //     model: Dietitian,
-                            //     required: false,
-                            // },
+                            {
+                                model: Dietitian,
+                                required: false,
+                            },
                             {
                                 model: Patient,
                                 required: false,
                             },
                         ],
                     });
-                    console.log("HALO")
-                    console.log(user);
+                    // console.log("HALO")
+                    // console.log("This is the user: ", user);
                     if (!user) {
                         return null;
                     }
-                    // here we check type of person user.jobType === 'DOCTOR' 
 
                     const passwordsMatch = await bcrypt.compare(password, user.password);
 
@@ -49,32 +48,19 @@ export const authOptions = {
                     console.log("Error: ", error);
                 }
             },
-            async session(session, credentials) {
-                const user = await User.findOne({
-                    where: { email: credentials.email },
-                    include: [
-                        // {
-                        //     model: Dietitian,
-                        //     required: false,
-                        // },
-                        {
-                            model: Patient,
-                            required: false,
-                        },
-                    ],
-                });
-
-                if (user) {
-                    const userData = user.toJSON();
-                    session.user = {
-                        ...userData
-                    };
-                }
-
-                return session;
-            },
         }),
     ],
+    callbacks: {
+        jwt: async ({ token, user }) => {
+            user && (token.user = user)
+            return token
+        },
+        session: async ({ session, token }) => {
+            session.user = token.user;
+            session.user.password = undefined;
+            return session
+        }
+    },
     session: {
         strategy: 'jwt',
     },
