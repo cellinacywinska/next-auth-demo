@@ -1,5 +1,5 @@
 import TestComponent from "@/components/TestComponent"
 
-export default function Test() {
+export default function DietitianDashboard() {
     return <TestComponent />
 }

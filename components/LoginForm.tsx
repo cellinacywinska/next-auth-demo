@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useEffect } from 'react';
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -33,17 +33,24 @@ export default function LoginForm() {
       if (res?.error) {
         setError("Invalid credentials");
       }
-
-      router.replace("dashboard");
     } catch (error) {
       setError("Something went wrong. Please try again.");
       console.log(error);
     }
   }
 
-  if (session != null) {
-    console.log(session);
-  }
+  useEffect(() => {
+    if (session == null || session.user == null) {
+      return;
+    }
+
+    if ('Patient' in session.user && session.user['Patient'] != null) {
+      router.replace("dashboard");
+    } else {
+      router.replace("dietitianDashboard")
+    }
+  }, [session])
+
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
