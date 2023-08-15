@@ -1,7 +1,10 @@
 import { testDbConnection } from "@/lib/postgres";
 import { User } from "@/models/User";
+import { Patient } from "@/models/Patient";
+import { Dietitian } from "@/models/Dietitian";
 import NextAuth from "next-auth/next";
 import bcrypt from "bcryptjs";
+import '@/models/associations.js';
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions = {
@@ -16,7 +19,21 @@ export const authOptions = {
 
                 try {
                     await testDbConnection();
-                    const user = await User.findOne({ where: { email } });
+                    const user = await User.findOne({
+                        where: { email },
+                        include: [
+                            // {
+                            //     model: Dietitian,
+                            //     required: false,
+                            // },
+                            {
+                                model: Patient,
+                                required: false,
+                            },
+                        ],
+                    });
+                    console.log("HALO")
+                    console.log(user);
                     if (!user) {
                         return null;
                     }
@@ -31,6 +48,30 @@ export const authOptions = {
                 } catch (error) {
                     console.log("Error: ", error);
                 }
+            },
+            async session(session, credentials) {
+                const user = await User.findOne({
+                    where: { email: credentials.email },
+                    include: [
+                        // {
+                        //     model: Dietitian,
+                        //     required: false,
+                        // },
+                        {
+                            model: Patient,
+                            required: false,
+                        },
+                    ],
+                });
+
+                if (user) {
+                    const userData = user.toJSON();
+                    session.user = {
+                        ...userData
+                    };
+                }
+
+                return session;
             },
         }),
     ],

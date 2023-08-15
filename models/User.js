@@ -2,7 +2,12 @@ const { sq } = require("../lib/postgres"); // Use 'sq' alias
 const { DataTypes } = require("sequelize");
 
 
-const User = sq.define("users", {
+const User = sq.define("Users", {
+  id_user: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -16,6 +21,7 @@ const User = sq.define("users", {
 
 User.sync().then(() => {
   console.log("USER MODEL")
+  // User.create({ id_user: 1, email: "asdf", password: "asdf" })
   // Table created
 }).catch((err) => {
   console.log("ERERRR");
